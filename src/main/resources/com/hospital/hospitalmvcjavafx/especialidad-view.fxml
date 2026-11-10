@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="560.0" prefWidth="710.0" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.hospitalmvcjavafx.control.EspecialidadController">
+
+    <children>
+        <!-- Título principal con estilo Bootstrap -->
+        <Label layoutX="25.0" layoutY="20.0" styleClass="h4, text-primary" text="Mantenimiento de Especialidades">
+         <font>
+            <Font size="15.0" />
+         </font></Label>
+
+        <!-- Contenedor del Formulario -->
+        <VBox layoutX="25.0" layoutY="65.0" prefWidth="450.0" spacing="10.0">
+            <children>
+                <!-- Nombre de especialidad -->
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <Label prefWidth="70.0" text="Nombre:" />
+                        <TextField fx:id="txtNombre" promptText="Nombre de especialidad a insertar" styleClass="form-control" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
+                <!-- Descripción de especialidad -->
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="26.0" prefWidth="85.0" text="Descripción:" />
+                        <TextField fx:id="txtDescripcion" prefHeight="25.0" prefWidth="360.0" promptText="Descripción de la especialidad (Opcional)" styleClass="form-control" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- Fila de Botones con Clases de Bootstrap -->
+        <HBox layoutX="25.0" layoutY="165.0" spacing="10.0">
+            <children>
+                <Button fx:id="btnGuardar" onAction="#guardar" styleClass="btn, btn-primary" text="Añadir" />
+                <Button fx:id="btnModificar" onAction="#modificar" styleClass="btn, btn-warning" text="Actualizar" />
+                <Button fx:id="btnEliminar" onAction="#eliminar" styleClass="btn, btn-danger" text="Eliminar" />
+                <Button fx:id="btnLimpiar" onAction="#limpiarFormulario" styleClass="btn, btn-secondary" text="Limpiar" />
+            </children>
+        </HBox>
+
+        <!-- Tabla de Datos Integrada -->
+        <TableView fx:id="tablaEspecialidades" layoutX="25.0" layoutY="225.0" onMouseClicked="#seleccionarFila" prefHeight="300.0" prefWidth="660.0" style="-fx-box-border: transparent;">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="70.0" text="ID" />
+                <TableColumn fx:id="colNombre" prefWidth="141.3333740234375" text="Nombre" />
+                <TableColumn fx:id="colDescripcion" prefWidth="447.33331298828125" text="Descripción" />
+            </columns>
+        </TableView>
+    </children>
+
+</AnchorPane>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<?import com.sun.javafx.scene.control.IntegerField?>
+<AnchorPane prefHeight="560.0" prefWidth="710.0" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.hospitalmvcjavafx.control.MedicoController">
+
+    <children>
+        <!-- Título principal -->
+        <Label layoutX="25.0" layoutY="20.0" styleClass="h4, text-primary" text="Mantenimiento de Médicos">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+
+        <!-- Contenido del formulario -->
+        <VBox layoutX="25.0" layoutY="60.0" prefHeight="17.0" prefWidth="435.0" spacing="10.0">
+            <children>
+                <!-- Nombre -->
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="25.0" prefWidth="144.0" text="Nombre:" />
+                        <TextField fx:id="txtNombre" prefHeight="25.0" prefWidth="351.0" promptText="Nombre de médico a insertar" />
+                    </children>
+                </HBox>
+
+                <!-- Numero colegiado -->
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="25.0" prefWidth="202.0" text="Número Colegiado:" />
+                        <TextField fx:id="intColegiado" prefHeight="25.0" prefWidth="409.0" promptText="Número de colegiado del médico a insertar" />
+                    </children>
+                </HBox>
+
+                <!-- Especialidad Nombre -->
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="25.0" prefWidth="139.0" text="Especialidad:" />
+                        <TextField fx:id="txtEspecialidad" prefHeight="25.0" prefWidth="347.0" promptText="Nombre de la especialidad a la que pertenece el médico" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- Fila de Botones -->
+        <HBox layoutX="25.0" layoutY="184.0" prefHeight="25.0" prefWidth="435.0" spacing="10.0">
+            <children>
+                <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#guardar" text="Añadir" />
+                <Button fx:id="btnActualizar" mnemonicParsing="false" onAction="#modificar" text="Actualizar" />
+                <Button fx:id="btnEliminar" mnemonicParsing="false" onAction="#eliminar" text="Eliminar" />
+                <Button fx:id="btnLimpiar" mnemonicParsing="false" onAction="#limpiarFormulario" text="Limpiar" />
+            </children>
+        </HBox>
+
+        <!-- Tabla de datos -->
+        <TableView fx:id="tblMedicos" layoutX="25.0" layoutY="223.0" onMouseClicked="#seleccionarFila" prefHeight="297.0" prefWidth="643.0">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="73.33331108093262" text="ID" />
+                <TableColumn fx:id="colNombre" prefWidth="227.33330535888672" text="Nombre de Médico" />
+                <TableColumn fx:id="colEspecialidad" prefWidth="197.33334350585938" text="Especialidad" />
+                <TableColumn fx:id="colNumColegiado" prefWidth="149.3333740234375" text="Número de Colegiado" />
+            </columns>
+        </TableView>
+    </children>
+
+</AnchorPane>

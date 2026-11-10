@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane  prefHeight="600.0"
+             prefWidth="950.0"
+             xmlns="http://javafx.com/javafx"
+             xmlns:fx="http://javafx.com/fxml"
+             fx:controller="com.hospital.hospitalmvcjavafx.control.MenuController">
+
+    <left>
+        <VBox prefWidth="220.0" spacing="12.0" style="-fx-background-color: #212529; -fx-padding: 20;">
+            <children>
+                <!-- Clases de Bootstrap: btn, btn-outline-light, btn-block -->
+                <Button fx:id="btnEspecialidades" maxWidth="Infinity" onAction="#mostrarEspecialidades" styleClass="btn, btn-outline-light" text="Especialidades" />
+                <Button fx:id="btnMedicos" maxWidth="Infinity" onAction="#mostrarMedicos" styleClass="btn, btn-outline-light" text="Medicos" />
+                <Button fx:id="btnClientes" maxWidth="Infinity" onAction="#mostrarClientes" styleClass="btn, btn-outline-light" text="Pacientes" />
+
+                <VBox VBox.vgrow="ALWAYS" /> <!-- Espaciador dinámico -->
+
+                <!-- Botón de acción principal usando btn-danger (Rojo Bootstrap) onAction="#generarReporte"-->
+                <Button fx:id="btnReportes" maxWidth="Infinity" styleClass="btn, btn-danger" text="📊 Reporte Jasper" />
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <AnchorPane fx:id="contentArea" prefHeight="600.0" prefWidth="730.0" style="-fx-background-color: #f8f9fa;" />
+    </center>
+
+</BorderPane>

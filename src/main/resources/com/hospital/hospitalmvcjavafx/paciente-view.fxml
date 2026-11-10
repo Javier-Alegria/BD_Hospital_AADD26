@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="650.0" prefWidth="850.0" style="-fx-padding: 20;"
+            xmlns="http://javafx.com"
+            xmlns:fx="http://fxml.com"
+            fx:controller="com.hospital.hospitalmvcjavafx.control.PacienteController">
+
+<children>
+    <Label layoutX="25.0" layoutY="20.0" styleClass="h4, text-primary" text="Mantenimiento de Pacientes y gestiones" />
+
+    <!-- Contenedor del Formulario -->
+    <VBox layoutX="25.0" layoutY="65.0" spacing="10.0" prefWidth="450.0">
+        <children>
+            <!-- Campo Nombre Paciente -->
+            <HBox spacing="15.0" alignment="CENTER_LEFT">
+                <children>
+                    <Label text="Nombre paciente:" prefWidth="110.0" />
+                    <TextField fx:id="txtNombrePaciente" HBox.hgrow="ALWAYS" styleClass="form-control" promptText="Nombre del paciente"/>
+                </children>
+            </HBox>
+
+            <!-- Campo dni paciente -->
+            <HBox spacing="15.0" alignment="CENTER_LEFT">
+                <children>
+                    <Label text="DNI paciente:" prefWidth="110.0" />
+                    <TextField fx:id="txtDniPaciente" HBox.hgrow="ALWAYS" styleClass="form-control" promptText="DNI del paciente"/>
+                </children>
+            </HBox>
+
+            <!-- Campo Fecha Nacimiento (DatePicker) -->
+            <HBox spacing="15.0" alignment="CENTER_LEFT">
+                <children>
+                    <Label text="Fecha nacimiento:" prefWidth="110.0" />
+                    <DatePicker fx:id="dpFecha" HBox.hgrow="ALWAYS" maxWidth="Infinity" styleClass="form-control" promptText="Fecha de nacimiento del paciente"/>
+                </children>
+            </HBox>
+        </children>
+    </VBox>
+
+    <!-- Selector de Medicos del Paciente (A la derecha del formulario) -->
+    <VBox layoutX="500.0" layoutY="65.0" spacing="5.0" prefWidth="325.0">
+        <children>
+            <Label text="Seleccionar Médicos (Mantén Ctrl para varios):" style="-fx-font-weight: bold;" />
+            <ListView fx:id="lvMedicos" prefHeight="130.0" styleClass="form-control" />
+        </children>
+    </VBox>
+
+    <!-- Fila de Botones con Clases de Bootstrap -->
+    <HBox layoutX="25.0" layoutY="245.0" spacing="10.0">
+        <children>
+            <Button fx:id="btnGuardar" text="Añadir" onAction="#guardar" styleClass="btn, btn-primary" />
+            <Button fx:id="btnModificar" text="Actualizar" onAction="#modificar" styleClass="btn, btn-warning" />
+            <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminar" styleClass="btn, btn-danger" />
+            <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarFormulario" styleClass="btn, btn-secondary" />
+        </children>
+    </HBox>
+
+    <!-- Tabla de Datos Integrada -->
+    <TableView fx:id="tablaPacientes" layoutX="25.0" layoutY="305.0" prefHeight="300.0" prefWidth="800.0" onMouseClicked="#seleccionarFila" style="-fx-box-border: transparent;">
+        <columns>
+            <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+            <TableColumn fx:id="colNombrePaciente" prefWidth="200.0" text="Paciente" />
+            <TableColumn fx:id="colDniPaciente" prefWidth="180.0" text="DNI Paciente" />
+            <TableColumn fx:id="colFecnaPaciente" prefWidth="110.0" text="Fecha Nacimiento" />
+            <TableColumn fx:id="colMedicos" prefWidth="260.0" text="Médicos del paciente" />
+        </columns>
+    </TableView>
+
+</children>
+
+</AnchorPane>
