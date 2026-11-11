@@ -23,7 +23,7 @@ public class PacienteDB {
 
         try(Connection conexion = conectar();
             PreparedStatement ps = conexion.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();) {
+            ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Paciente paciente = new Paciente();
@@ -82,23 +82,6 @@ public class PacienteDB {
         } finally {
             desconectar();
         }
-        /*
-        int idGenerado = 0;
-        try (Connection conexion = conectar();
-            PreparedStatement ps = conexion.prepareStatement(sql)){
-
-            ps.setString(1, paciente.getNombrePaciente());
-            ps.setString(2, paciente.getDniPaciente());
-            ps.setObject(3, paciente.getFechaNacimiento());
-
-            resultado = ps.executeUpdate();
-
-            actualizarGestiones(paciente.getIdPaciente(), paciente.getMedicosList(), conexion);
-
-        } catch (SQLException e) {
-            mostrarError("Error de inserción","Error al insertar el paciente: " + e.getMessage());
-        }
-        */
 
         return resultado;
     }

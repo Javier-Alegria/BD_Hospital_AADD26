@@ -3,6 +3,7 @@ package com.hospital.hospitalmvcjavafx.control;
 import com.hospital.hospitalmvcjavafx.dao.MedicoDB;
 import com.hospital.hospitalmvcjavafx.modelo.Especialidad;
 import com.hospital.hospitalmvcjavafx.modelo.Medico;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+
+import java.util.List;
 
 import static com.hospital.hospitalmvcjavafx.dao.EspecialidadDB.*;
 import static com.hospital.hospitalmvcjavafx.dao.MedicoDB.borrarMedico;
@@ -24,6 +27,8 @@ public class MedicoController {
     @FXML private TextField intColegiado;
     @FXML private TextField txtEspecialidad;
 
+    @FXML private ComboBox<Especialidad> cbEspecialidad;
+
     // Tabla de datos
     @FXML private TableView<Medico> tblMedicos;
 
@@ -35,6 +40,19 @@ public class MedicoController {
 
     @FXML
     public void initialize(){
+        // 1- Obtener la lista de Especialidades
+        List<Especialidad> especialidadesList = listarEspecialidades();
+
+        // 2- Convertirla en una observable list (Requerido por JavaFX
+        ObservableList<Especialidad> especialidadesObservableList = FXCollections.observableArrayList(especialidadesList);
+
+        // 3- Asignar los Items al combo box
+        if (cbEspecialidad != null){
+            cbEspecialidad.setItems(especialidadesObservableList);
+        } else {
+            mostrarError("Alerta del código","cbEspecialidades sigue viniendo null desde el FXML.");
+        }
+
         colId.setCellValueFactory(new PropertyValueFactory<>("idMedico"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreMedico"));
         colEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidadNombre"));
@@ -43,40 +61,25 @@ public class MedicoController {
     }
 
     private void cargarDatos(){
-        ObservableList<Medico> medicos = FXCollections.observableArrayList(MedicoDB.listarMedicos());
-        tblMedicos.setItems(medicos);
-    }
-
-    private void limpiarForm(){
-        txtNombre.clear();
-        intColegiado.clear();
-        txtEspecialidad.clear();
+        ObservableList<Medico> medicosObservableList = FXCollections.observableArrayList(MedicoDB.listarMedicos());
+        tblMedicos.setItems(medicosObservableList);
     }
 
     public void guardar(ActionEvent actionEvent) {
-
-        String especialidad = txtEspecialidad.getText().trim();
-
         if (txtNombre.getText().trim().isEmpty()
             || intColegiado.getText().trim().isEmpty()
-            || especialidad.isEmpty() ){
+            || cbEspecialidad.getSelectionModel().getSelectedItem() == null ){
             mostrarError("Datos incompletos",
                     "Todos los campos son obligatorios"
-            );
-        } else if (!comprobarEspecialidad(especialidad)) {
-            mostrarError("Error de búsqueda",
-                    "La especialidad indicada no existe en la base de datos"
             );
         } else {
             try {
                 int numeroColegiado = Integer.parseInt(intColegiado.getText().trim());
 
-                Especialidad esp = buscarEspecialidad(especialidad);
-
-                insertarMedico(new Medico(0,txtNombre.getText().trim(),numeroColegiado,esp));
+                insertarMedico(new Medico(0,txtNombre.getText().trim(),numeroColegiado,cbEspecialidad.getValue()));
 
                 cargarDatos();
-                limpiarForm();
+                limpiarFormulario(null);
             } catch (NumberFormatException e) {
                 mostrarError("Datos incorrectos",
                         "El número de colegiado debe ser un entero válido"
@@ -90,16 +93,15 @@ public class MedicoController {
         Medico seleccionado = tblMedicos.getSelectionModel().getSelectedItem();
 
         String nombre = txtNombre.getText().trim();
-
-        String especialidad = txtEspecialidad.getText().trim();
+        int colegiado = Integer.parseInt(intColegiado.getText().trim());
 
         if (seleccionado == null) {
             mostrarError("Tabla no seleccionada",
                     "Debes seleccionar un medico"
             );
-        } else if (!comprobarEspecialidad(especialidad)) {
-            mostrarError("Error de búsqueda",
-                    "La especialidad no existe en la base de datos"
+        } else if (cbEspecialidad.getSelectionModel().getSelectedItem() == null) {
+            mostrarError("Datos incompletos",
+                    "Debe seleccionar una especialidad para el médico"
             );
         } else if (nombre.isEmpty()) {
             mostrarError("Datos incompletos",
@@ -111,15 +113,11 @@ public class MedicoController {
             );
         } else {
             try {
-                int colegiado = Integer.parseInt(intColegiado.getText().trim());
-
-                Especialidad esp = buscarEspecialidad(especialidad);
-
-                MedicoDB.actualizarMedico(seleccionado.getIdMedico(), nombre, colegiado, esp);
+                MedicoDB.actualizarMedico(seleccionado.getIdMedico(), nombre, colegiado, cbEspecialidad.getValue());
 
                 cargarDatos();
                 tblMedicos.getSelectionModel().clearSelection();
-                limpiarForm();
+                limpiarFormulario(null);
 
             } catch (NumberFormatException e) {
                 mostrarError("Datos incorrectos",
@@ -138,15 +136,16 @@ public class MedicoController {
             borrarMedico(tblMedicos.getSelectionModel().getSelectedItem());
             cargarDatos();
         } catch (RuntimeException e) {
-            e.printStackTrace();
             mostrarError("Error crítico",
-                    "No se ha podido borrar médico"
+                    "No se ha podido borrar médico: " + e.getMessage()
             );
         }
     }
 
     public void limpiarFormulario(ActionEvent actionEvent) {
-        limpiarForm();
+        txtNombre.clear();
+        intColegiado.clear();
+        cbEspecialidad.setValue(null);
     }
 
     public void seleccionarFila(MouseEvent mouseEvent) {
@@ -155,8 +154,7 @@ public class MedicoController {
         if (seleccionado != null) {
             txtNombre.setText(seleccionado.getNombreMedico());
             intColegiado.setText(String.valueOf(seleccionado.getNumeroColegiado()));
-            txtEspecialidad.setText(seleccionado.getEspecialidadNombre());
-
+            cbEspecialidad.setValue(seleccionado.getEspecialidad());
         }
     }
 }

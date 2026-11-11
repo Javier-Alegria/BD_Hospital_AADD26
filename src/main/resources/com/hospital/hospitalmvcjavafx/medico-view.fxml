@@ -5,7 +5,11 @@
 <?import javafx.scene.text.*?>
 
 <?import com.sun.javafx.scene.control.IntegerField?>
-<AnchorPane prefHeight="560.0" prefWidth="710.0" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hospital.hospitalmvcjavafx.control.MedicoController">
+<AnchorPane prefHeight="560.0" prefWidth="710.0"
+            style="-fx-padding: 20;"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.hospital.hospitalmvcjavafx.control.MedicoController">
 
     <children>
         <!-- Título principal -->
@@ -34,11 +38,11 @@
                     </children>
                 </HBox>
 
-                <!-- Especialidad Nombre -->
-                <HBox prefHeight="100.0" prefWidth="200.0">
+                <!-- Campo especialidad con desplegable -->
+                <HBox>
                     <children>
-                        <Label prefHeight="25.0" prefWidth="139.0" text="Especialidad:" />
-                        <TextField fx:id="txtEspecialidad" prefHeight="25.0" prefWidth="347.0" promptText="Nombre de la especialidad a la que pertenece el médico" />
+                        <Label text="Especialidad: " prefHeight="25.0" prefWidth="139.0" />
+                        <ComboBox fx:id="cbEspecialidad" prefHeight="25.0" prefWidth="347.0" promptText="Seleccione una especialidad"  HBox.hgrow="ALWAYS" maxWidth="Infinity" styleClass="form-control" />
                     </children>
                 </HBox>
             </children>

@@ -65,12 +65,12 @@ public class MedicoDB {
 
     public static int borrarMedico(Medico medico){
         int respuesta = 0;
-        String query = "DELETE FROM medicos WHERE nombre_medico = ?";
+        String query = "DELETE FROM medicos WHERE numero_colegiado = ?";
 
         try (Connection conexion = conectar();
                 PreparedStatement ps = conexion.prepareStatement(query)) {
 
-            ps.setString(1, medico.getNombreMedico());
+            ps.setInt(1, medico.getNumeroColegiado());
 
             respuesta = ps.executeUpdate();
 
