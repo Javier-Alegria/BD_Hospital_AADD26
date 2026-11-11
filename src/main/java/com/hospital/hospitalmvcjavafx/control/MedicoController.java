@@ -25,8 +25,6 @@ public class MedicoController {
     // Menú de insert
     @FXML private TextField txtNombre;
     @FXML private TextField intColegiado;
-    @FXML private TextField txtEspecialidad;
-
     @FXML private ComboBox<Especialidad> cbEspecialidad;
 
     // Tabla de datos
