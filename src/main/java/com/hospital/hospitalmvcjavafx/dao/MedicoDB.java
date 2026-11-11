@@ -13,6 +13,12 @@ import static com.hospital.hospitalmvcjavafx.config.Conexion.desconectar;
 import static com.hospital.hospitalmvcjavafx.Utilidades.mostrarError;
 
 public class MedicoDB {
+
+    /**
+     * Obtiene todos los médicos de la base de datos junto con su especialidad.
+     *
+     * @return lista de médicos (vacía si no hay ninguno o si falla la consulta)
+     */
     public static List<Medico> listarMedicos() {
         List<Medico> medicosList = new ArrayList<>();
 
@@ -42,6 +48,13 @@ public class MedicoDB {
         return medicosList;
     }
 
+    /**
+     * Inserta un nuevo médico en la base de datos. Si falla (por ejemplo, por un
+     * número de colegiado duplicado) muestra un mensaje de error.
+     *
+     * @param medico médico a insertar
+     * @return número de filas insertadas (1 si se inserta, 0 si falla)
+     */
     public static int insertarMedico(Medico medico){
         int respuesta = 0;
         String sql = "INSERT INTO medicos VALUES (0, ?, ?, ?)";
@@ -63,6 +76,13 @@ public class MedicoDB {
         return respuesta;
     }
 
+    /**
+     * Borra de la base de datos el médico con el mismo número de colegiado que el recibido.
+     *
+     * @param medico médico a borrar
+     * @throws RuntimeException si falla la operación en la base de datos
+     * @return número de filas borradas (0 si no existe o si falla el borrado)
+     */
     public static int borrarMedico(Medico medico){
         int respuesta = 0;
         String query = "DELETE FROM medicos WHERE numero_colegiado = ?";
@@ -75,11 +95,21 @@ public class MedicoDB {
             respuesta = ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return respuesta;
     }
 
+    /**
+     * Actualiza el nombre, el número de colegiado y la especialidad del médico con el id indicado.
+     *
+     * @param id identificador del médico a modificar
+     * @param nombre nuevo nombre del médico
+     * @param colegiado nuevo número de colegiado
+     * @param especialidad nueva especialidad del médico
+     *
+     * @throws RuntimeException si falla la operación en la base de datos
+     */
     public static void actualizarMedico(int id, String nombre, int colegiado, Especialidad especialidad){
         String query = "UPDATE medicos SET nombre_medico = ?, numero_colegiado = ?, especialidad_id = ? WHERE id_medico = ?";
 
@@ -94,7 +124,7 @@ public class MedicoDB {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

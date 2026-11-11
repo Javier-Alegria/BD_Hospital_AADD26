@@ -29,19 +29,31 @@ public class EspecialidadController {
     @FXML private TableColumn<Especialidad, String> colDescripcion;
 
 
-    @FXML
-    public void initialize() {
+    /**
+     * Inicializa el controlador: asocia cada columna de la tabla con su atributo
+     * de Especialidad y carga los datos.
+     */
+    @FXML public void initialize() {
         colId.setCellValueFactory(new PropertyValueFactory<>("idEspecialidad"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreEspecialidad"));
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcionEspecialidad"));
         cargarDatosTabla();
     }
 
+    /**
+     * Obtiene las especialidades de la base de datos y las muestra en la tabla.
+     */
     private void cargarDatosTabla() {
         ObservableList<Especialidad> especialidades = FXCollections.observableArrayList(EspecialidadDB.listarEspecialidades());
         tablaEspecialidades.setItems(especialidades);
     }
 
+    /**
+     * Inserta una nueva especialidad con los datos del formulario. El nombre es
+     * obligatorio; la descripción es opcional. Después recarga la tabla y limpia el formulario.
+     *
+     * @param actionEvent evento generado al pulsar el botón de guardar
+     */
     public void guardar(ActionEvent actionEvent) {
         if (txtNombre.getText().trim().isEmpty()) {
             mostrarError("Datos incompletos",
@@ -54,10 +66,17 @@ public class EspecialidadController {
                 insertarEspecialidad(new Especialidad(0, txtNombre.getText().trim(), txtDescripcion.getText().trim()));
 
             cargarDatosTabla();
-            limpiarForm();
+            limpiarFormulario(null);
         }
     }
 
+    /**
+     * Actualiza la especialidad seleccionada en la tabla con los datos del formulario.
+     * Muestra un error si no hay fila seleccionada, si el nombre está vacío o si
+     * falla la actualización (RuntimeException).
+     *
+     * @param actionEvent evento generado al pulsar el botón de modificar
+     */
     public void modificar(ActionEvent actionEvent) {
         Especialidad seleccionada =
                 tablaEspecialidades.getSelectionModel().getSelectedItem();
@@ -79,7 +98,7 @@ public class EspecialidadController {
 
                 cargarDatosTabla();
                 tablaEspecialidades.getSelectionModel().clearSelection();
-                limpiarForm();
+                limpiarFormulario(null);
 
             } catch (RuntimeException e) {
                 e.printStackTrace();
@@ -90,6 +109,12 @@ public class EspecialidadController {
         }
     }
 
+    /**
+     * Borra la especialidad seleccionada en la tabla. Muestra un error si no hay
+     * selección o si tiene médicos asociados (RuntimeException).
+     *
+     * @param actionEvent evento generado al pulsar el botón de eliminar
+     */
     public void eliminar(ActionEvent actionEvent) {
         Especialidad seleccionada = tablaEspecialidades.getSelectionModel().getSelectedItem();
 
@@ -111,15 +136,22 @@ public class EspecialidadController {
         }
     }
 
+    /**
+     * Vacía los campos del formulario al pulsar el botón de limpiar.
+     *
+     * @param actionEvent evento generado al pulsar el botón de limpiar
+     */
     public void limpiarFormulario(ActionEvent actionEvent) {
-        limpiarForm();
-    }
-
-    public void limpiarForm() {
         txtNombre.clear();
         txtDescripcion.clear();
     }
 
+    /**
+     * Al hacer clic en una fila de la tabla, rellena el formulario con el nombre
+     * y la descripción de la especialidad seleccionada.
+     *
+     * @param mouseEvent evento de ratón generado al hacer clic en la tabla
+     */
     public void seleccionarFila(MouseEvent mouseEvent) {
         Especialidad seleccionada = tablaEspecialidades.getSelectionModel().getSelectedItem();
 

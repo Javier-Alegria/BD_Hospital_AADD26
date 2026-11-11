@@ -7,11 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.hospital.hospitalmvcjavafx.config.Conexion.conectar;
-import static com.hospital.hospitalmvcjavafx.config.Conexion.desconectar;
 
 import static com.hospital.hospitalmvcjavafx.Utilidades.mostrarError;
 
 public class EspecialidadDB {
+
+    /**
+     * Obtiene todas las especialidades de la base de datos.
+     *
+     * @return lista de especialidades (vacía si no hay ninguna o si falla la consulta)
+     */
     public static List<Especialidad> listarEspecialidades() {
         List<Especialidad> especialidades = new ArrayList<>();
         ResultSet rs;
@@ -37,6 +42,13 @@ public class EspecialidadDB {
         return especialidades;
     }
 
+    /**
+     * Inserta una nueva especialidad en la base de datos. Si falla (por ejemplo,
+     * por un nombre duplicado) muestra un mensaje de error.
+     *
+     * @param especialidad especialidad a insertar
+     * @return número de filas insertadas (1 si se inserta, 0 si falla)
+     */
     public static int insertarEspecialidad(Especialidad especialidad) {
         int resultado = 0;
         String query = "INSERT INTO especialidades VALUES (0, ?, ?)";
@@ -56,6 +68,13 @@ public class EspecialidadDB {
         return resultado;
     }
 
+    /**
+     * Borra de la base de datos la especialidad con el mismo nombre que la recibida.
+     *
+     * @param especialidad especialidad a borrar
+     * @throws RuntimeException si falla la operación en la base de datos
+     * @return número de filas borradas (0 si no existe o si falla el borrado)
+     */
     public static int borrarEspecialidad(Especialidad especialidad) {
         int respuesta = 0;
         String query = "DELETE FROM especialidades WHERE nombre_especialidad = ?";
@@ -67,7 +86,7 @@ public class EspecialidadDB {
 
             respuesta = ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return respuesta;
     }
@@ -129,6 +148,15 @@ public class EspecialidadDB {
         return especialidad;
     }
 
+    /**
+     * Actualiza el nombre y la descripción de la especialidad con el id indicado.
+     *
+     * @param id identificador de la especialidad a modificar
+     * @param nombre nuevo nombre de la especialidad
+     * @param descripcion nueva descripción de la especialidad
+     *
+     * @throws RuntimeException si falla la operación en la base de datos
+     */
     public static void actualizarEspecialidad(int id, String nombre, String descripcion) {
         String sql = "UPDATE especialidades SET nombre_especialidad = ?, descripcion_especialidad = ? WHERE id_especialidad = ?";
 
@@ -142,7 +170,7 @@ public class EspecialidadDB {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

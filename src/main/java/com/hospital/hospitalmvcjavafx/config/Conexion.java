@@ -12,6 +12,11 @@ public class Conexion {
 
     private static Connection jdbcConexion = null;
 
+    /**
+     * Constructor privado. Si no hay conexión abierta, carga el driver JDBC
+     * y crea la conexión con la base de datos.
+     * @throws RuntimeException si falla
+     */
     private Conexion(){
         try{
             if ((jdbcConexion==null || jdbcConexion.isClosed())){
@@ -23,13 +28,19 @@ public class Conexion {
         }
     }
 
-    // Patrón singleton
+    /**
+     * @return conexión de la base de datos (Patrón singleton).
+     * Si no existe o está cerrada, la crea.
+     */
     public static Connection conectar(){
         new Conexion();
         //Esto es lo que siempre tengo que devolver
         return jdbcConexion;
     }
 
+    /**
+     * Libera la conexión estableciéndola a null.
+     */
     public static void desconectar(){
         try {
             if(!jdbcConexion.isClosed()||jdbcConexion!=null){

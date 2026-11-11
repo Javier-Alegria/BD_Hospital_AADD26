@@ -3,7 +3,6 @@ package com.hospital.hospitalmvcjavafx.control;
 import com.hospital.hospitalmvcjavafx.dao.MedicoDB;
 import com.hospital.hospitalmvcjavafx.modelo.Especialidad;
 import com.hospital.hospitalmvcjavafx.modelo.Medico;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -36,8 +35,11 @@ public class MedicoController {
     @FXML private TableColumn<Medico, String> colEspecialidad;
     @FXML private TableColumn<Medico, Integer> colNumColegiado;
 
-    @FXML
-    public void initialize(){
+    /**
+     * Inicializa el controlador: carga las especialidades en el ComboBox, asocia
+     * cada columna de la tabla con su atributo de Médico y carga los datos.
+     */
+    @FXML public void initialize(){
         // 1- Obtener la lista de Especialidades
         List<Especialidad> especialidadesList = listarEspecialidades();
 
@@ -58,11 +60,22 @@ public class MedicoController {
         cargarDatos();
     }
 
+    /**
+     * Inicializa el controlador: carga las especialidades en el ComboBox, asocia
+     * cada columna de la tabla con su atributo de Medico y carga los datos.
+     */
     private void cargarDatos(){
         ObservableList<Medico> medicosObservableList = FXCollections.observableArrayList(MedicoDB.listarMedicos());
         tblMedicos.setItems(medicosObservableList);
     }
 
+    /**
+     * Inserta un nuevo médico con los datos del formulario. Todos los campos son
+     * obligatorios y el número de colegiado debe ser un entero. Después recarga
+     * la tabla y limpia el formulario.
+     *
+     * @param actionEvent evento generado al pulsar el botón de guardar
+     */
     public void guardar(ActionEvent actionEvent) {
         if (txtNombre.getText().trim().isEmpty()
             || intColegiado.getText().trim().isEmpty()
@@ -87,11 +100,19 @@ public class MedicoController {
 
     }
 
+    /**
+     * Actualiza el médico seleccionado en la tabla con los datos del formulario.
+     * Muestra un error si no hay fila seleccionada, si falta algún dato, si el
+     * número de colegiado no es un entero (NumberFormatException) o si falla la
+     * actualización (RuntimeException).
+     *
+     * @param actionEvent evento generado al pulsar el botón de modificar
+     */
     public void modificar(ActionEvent actionEvent) {
         Medico seleccionado = tblMedicos.getSelectionModel().getSelectedItem();
 
         String nombre = txtNombre.getText().trim();
-        int colegiado = Integer.parseInt(intColegiado.getText().trim());
+
 
         if (seleccionado == null) {
             mostrarError("Tabla no seleccionada",
@@ -111,6 +132,8 @@ public class MedicoController {
             );
         } else {
             try {
+                int colegiado = Integer.parseInt(intColegiado.getText().trim());
+
                 MedicoDB.actualizarMedico(seleccionado.getIdMedico(), nombre, colegiado, cbEspecialidad.getValue());
 
                 cargarDatos();
@@ -129,23 +152,49 @@ public class MedicoController {
         }
     }
 
+    /**
+     * Borra el médico seleccionado en la tabla y recarga los datos. Muestra un
+     * error si no hay selección o si falla el borrado (RuntimeException).
+     *
+     * @param actionEvent evento generado al pulsar el botón de eliminar
+     */
     public void eliminar(ActionEvent actionEvent) {
-        try {
-            borrarMedico(tblMedicos.getSelectionModel().getSelectedItem());
-            cargarDatos();
-        } catch (RuntimeException e) {
-            mostrarError("Error crítico",
-                    "No se ha podido borrar médico: " + e.getMessage()
+        Medico seleccionado = tblMedicos.getSelectionModel().getSelectedItem();
+
+        if(seleccionado == null){
+            mostrarError("Error al borrar",
+                    "Debes seleccionar un médico"
             );
+        } else {
+            try {
+                borrarMedico(seleccionado);
+                cargarDatos();
+            } catch (RuntimeException e) {
+                mostrarError("Error crítico",
+                        "No se ha podido borrar médico: " + e.getMessage()
+                );
+            }
         }
     }
 
+    /**
+     * Vacía los campos del formulario y deselecciona la especialidad del ComboBox.
+     *
+     * @param actionEvent evento generado al pulsar el botón de limpiar (puede ser null
+     *                    si se llama desde otro método)
+     */
     public void limpiarFormulario(ActionEvent actionEvent) {
         txtNombre.clear();
         intColegiado.clear();
-        cbEspecialidad.setValue(null);
+        cbEspecialidad.getSelectionModel().clearSelection();
     }
 
+    /**
+     * Al hacer clic en una fila de la tabla, rellena el formulario con el nombre,
+     * el número de colegiado y la especialidad del médico seleccionado.
+     *
+     * @param mouseEvent evento de ratón generado al hacer clic en la tabla
+     */
     public void seleccionarFila(MouseEvent mouseEvent) {
         Medico seleccionado = tblMedicos.getSelectionModel().getSelectedItem();
 

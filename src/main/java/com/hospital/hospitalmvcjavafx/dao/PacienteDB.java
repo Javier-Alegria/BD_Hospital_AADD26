@@ -17,6 +17,13 @@ import static com.hospital.hospitalmvcjavafx.config.Conexion.conectar;
 import static com.hospital.hospitalmvcjavafx.config.Conexion.desconectar;
 
 public class PacienteDB {
+
+    /**
+     * Obtiene todos los pacientes de la base de datos junto con los médicos asignados a cada uno.
+     *
+     * @return lista de pacientes (vacía si no hay ninguno)
+     * @throws RuntimeException si falla la consulta
+     */
     public static List<Paciente> consultarPacientes() {
         List<Paciente> pacientesList = new ArrayList<>();
         String sql = "SELECT id_paciente, nombre_paciente, dni_paciente, fecna_paciente FROM pacientes";
@@ -44,6 +51,13 @@ public class PacienteDB {
         return pacientesList;
     }
 
+    /**
+     * Inserta un nuevo paciente y sus gestiones con los médicos en una misma transacción.
+     * Si algo falla, muestra un error y deshace los cambios (rollback).
+     *
+     * @param paciente paciente a insertar, con su lista de médicos
+     * @return número de filas insertadas en la tabla pacientes
+     */
     public static int insertarPaciente(Paciente paciente) {
         int resultado = 0;
         String sql = "INSERT INTO pacientes (id_paciente, nombre_paciente, dni_paciente, fecna_paciente) VALUES (0, ?, ?, ?)";
@@ -75,6 +89,7 @@ public class PacienteDB {
                 try {
                     // Deshacemos cualquier inserción o borrado parcial si algo falló
                     conexion.rollback();
+                    resultado = 0;
                 } catch (SQLException ex) {
                     mostrarError("Error de rollback","Error al aplicar el rollback: " + ex.getMessage());
                 }
@@ -86,6 +101,14 @@ public class PacienteDB {
         return resultado;
     }
 
+    /**
+     * Busca el id de un paciente a partir de su DNI, usando la conexión recibida.
+     *
+     * @param dniPaciente DNI del paciente
+     * @param conexion conexión abierta (la de la transacción en curso)
+     * @return id del paciente, o 0 si no se encuentra
+     * @throws SQLException si falla la consulta
+     */
     private static int obtenerIdPorDni(String dniPaciente, Connection conexion) throws SQLException {
         String sql = "SELECT id_paciente FROM pacientes WHERE dni_paciente = ?";
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -99,9 +122,17 @@ public class PacienteDB {
         return 0;
     }
 
+    /**
+     * Obtiene los médicos asignados a un paciente a través de la tabla gestiones.
+     *
+     * @param idPaciente id del paciente
+     * @param conexion conexión abierta que se usa para la consulta
+     * @return lista de médicos del paciente (vacía si no tiene ninguno)
+     * @throws SQLException si falla la consulta
+     */
     private static List<Medico> consultarMedicosPorPaciente(int idPaciente, Connection conexion) throws SQLException {
         List<Medico> medicos = new ArrayList<>();
-        String sql = "SELECT m.id_medico, m.nombre_medico, m.especialidad_id, e.nombre_especialidad FROM gestiones gest INNER JOIN medicos m ON gest.medico_id = m.id_medico INNER JOIN especialidades e ON m.especialidad_id = e.id_especialidad WHERE gest.paciente_id = ?";
+        String sql = "SELECT m.id_medico, m.nombre_medico, m.numero_colegiado, m.especialidad_id, e.nombre_especialidad FROM gestiones gest INNER JOIN medicos m ON gest.medico_id = m.id_medico INNER JOIN especialidades e ON m.especialidad_id = e.id_especialidad WHERE gest.paciente_id = ?";
 
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1,idPaciente);
@@ -111,7 +142,7 @@ public class PacienteDB {
                     medico.setIdMedico(rs.getInt(1));
                     medico.setNombreMedico(rs.getString(2));
                     medico.setNumeroColegiado(rs.getInt(3));
-                    medico.setEspecialidad(new Especialidad(rs.getInt(3), rs.getString(4)));
+                    medico.setEspecialidad(new Especialidad(rs.getInt(4), rs.getString(5)));
 
                     medicos.add(medico);
                 }
@@ -120,6 +151,13 @@ public class PacienteDB {
         return medicos;
     }
 
+    /**
+     * Actualiza los datos de un paciente y sus gestiones con los médicos en una misma
+     * transacción. Si algo falla, muestra un error y deshace los cambios (rollback).
+     *
+     * @param paciente paciente con los nuevos datos y su lista de médicos
+     * @return número de filas modificadas en la tabla pacientes
+     */
     public static int actualizarPaciente(Paciente paciente) {
         int resultado = 0;
         String sql = "UPDATE pacientes SET nombre_paciente = ?, dni_paciente = ?, fecna_paciente = ? WHERE id_paciente = ?";
@@ -150,6 +188,7 @@ public class PacienteDB {
                 try {
                     // Deshacemos cualquier inserción o borrado parcial si algo falló
                     conexion.rollback();
+                    resultado = 0;
                 } catch (SQLException ex) {
                     mostrarError("Error de rollback","Error al aplicar el rollback: " + ex.getMessage());
                 }
@@ -161,6 +200,15 @@ public class PacienteDB {
         return resultado;
     }
 
+    /**
+     * Reemplaza las gestiones de un paciente: borra las existentes e inserta una por
+     * cada médico de la lista. No hace commit; lo hace el método que la llama.
+     *
+     * @param idPaciente id del paciente
+     * @param medicos médicos que debe tener asignados (puede ser null o vacía)
+     * @param conexion conexión con la transacción en curso
+     * @throws SQLException si falla el borrado o la inserción
+     */
     private static void actualizarGestiones(int idPaciente, List<Medico> medicos, Connection conexion) throws SQLException {
         String sqlDelete = "DELETE FROM gestiones WHERE paciente_id = ?";
         try (PreparedStatement psDelete = conexion.prepareStatement(sqlDelete)) {
@@ -180,6 +228,13 @@ public class PacienteDB {
         }
     }
 
+    /**
+     * Borra un paciente y sus gestiones en una misma transacción. Si falla, deshace
+     * los cambios (rollback) y muestra un error.
+     *
+     * @param idPaciente id del paciente a borrar
+     * @return número de filas borradas en la tabla pacientes (0 si no existe o si falla)
+     */
     public static int eliminarPaciente(int idPaciente) {
         int resultado = 0;
 
